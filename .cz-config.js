@@ -1,4 +1,3 @@
-
 module.exports = {
   // 可选类型
   types: [
