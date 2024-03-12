@@ -49,9 +49,10 @@
 </template>
 
 <script setup lang='ts'>
-import {reactive, ref} from 'vue'
+import {reactive, ref, toRaw} from 'vue'
 import { genFileId, ElMessage } from 'element-plus'
 import type { UploadInstance, UploadRawFile, FormRules, FormInstance } from 'element-plus'
+import {addCompilationApi} from '@/request/index'
 const props = defineProps({
   show: {
     type: Boolean,
@@ -63,7 +64,7 @@ let fileList = ref([])
 const uploadRef = ref<UploadInstance>()
 const formRef = ref<FormInstance>()
 
-const emits = defineEmits(['onClose'])
+const emits = defineEmits(['onClose', 'getList'])
 
 const formData = reactive({
   name: '',
@@ -87,6 +88,13 @@ const rules = reactive<FormRules>({
 const handleRemove = () => {
   formData.image = ''
   fileList.value = []
+}
+
+const reset = () => {
+  fileList.value = []
+  formData.name = ''
+  formData.sort = null
+  formData.image = ''
 }
 
 const handleExceed = (files:any) => {
@@ -115,13 +123,26 @@ const getBase64 = (file: any) => {
 
 const onClose = () => {
   formRef?.value?.resetFields()
+  reset()
   emits('onClose')
 }
 
 const handleSubmit = () => {
   formRef?.value?.validate(valid => {
     if (valid) {
-      emits('onClose')
+      addCompilationApi({...toRaw(formData)}).then((res:any) => {
+        if (res.code === 200) {
+          ElMessage.success('添加成功')
+          formRef?.value?.resetFields()
+          reset()
+          emits('onClose')
+          emits('getList')
+        } else {
+          ElMessage.error(res.message)
+        }
+      }).catch((err:any) => {
+        console.log('err', err)
+      })
     }
   })
 }

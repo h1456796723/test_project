@@ -9,17 +9,23 @@
         </div>
         <div class="search-container">
           <div class="search">
-            <input type="text" placeholder="请输入想要查找的内容">
-            <div class="btn">搜索一下</div>
+            <input v-model="queryParams.keywords" type="text" placeholder="请输入想要查找的内容">
+            <div class="btn" @click="searchCompilation">搜索一下</div>
           </div>    
         </div>
       </div>
     </div>
     <div class="search-result">
       <div class="inner">
-        <!-- <div v-for="item in 6" :key="item" class="inner-item">
-          <Compilation />
-        </div> -->
+        <div v-for="item in CompilationList" :key="item.id" class="inner-item">
+          <Compilation 
+          :id="item.id" 
+          :image="item.image" 
+          :name="item.name"
+          @delete="deleteCompilation(item.id)"
+          @edit="editCompilation(item.id)"
+          ></Compilation>
+        </div>
         <div class="inner-item add-item" @click="showAddCompilation = true">
           <div>添加合辑</div>
           <div>></div>
@@ -27,19 +33,91 @@
       </div>
     </div>
 
-    <AddCompilation :show="showAddCompilation" @onClose="showAddCompilation = false" />
+    <AddCompilation :show="showAddCompilation" @onClose="showAddCompilation = false" @getList="getCompilation" />
+
+    <div class="footer">
+      <el-pagination background layout="prev, pager, next" :total="total" :page-size="queryParams.pageSize" @current-change="currentChange" />
+    </div>
 
   </div>
 
 </template>
 
 <script setup lang='ts'>
-import { ref } from 'vue'
+import { ref, onMounted, reactive, toRaw } from 'vue'
+import { ElMessageBox } from 'element-plus'
+import type { Action } from 'element-plus'
 import HeaderTop from './components/HeaderTop.vue'
 import Compilation from '@/components/Compilation.vue'
 import AddCompilation from './components/AddCompilation.vue'
+import {getCompilationApi,deleteCompilationApi} from '@/request/index.ts'
+
+type CompilationItem = {
+  id: number,
+  name: string,
+  image: string,
+  sort: number
+}
 
 let showAddCompilation = ref(false)
+let CompilationList = ref<CompilationItem[]>([])
+let total = ref(0)
+const queryParams = reactive({
+  currentPage: 1,
+  pageSize: 5,
+  keywords: ''
+})
+
+onMounted(() => {
+  getCompilation()
+})
+
+const deleteCompilation = (id:number) => {
+  ElMessageBox.alert('合辑下的图片也会被删除，您确定要删除吗？','提示', {
+    confirmButtonText: '确认',
+    cancelButtonText: '取消',
+    showCancelButton: true,
+    callback(action: Action) {
+      if (action === 'confirm') {
+        deleteCompilationApi({id}).then((res: any) => {
+          if (res.code === 200) {
+            ElMessage.success('删除成功')
+            getCompilation()
+          } else {
+            ElMessage.error(res.message || '删除失败')
+          }
+        }).catch((err: any) => {
+          console.log('err', err)
+        })
+      }
+    }
+  })
+}
+
+const searchCompilation = () => {
+  queryParams.currentPage = 1
+  getCompilation()
+}
+
+const currentChange = (value: number) => {
+  queryParams.currentPage = value
+  getCompilation()
+}
+
+const editCompilation = (id:number) => {
+
+}
+
+const getCompilation = () => {
+  getCompilationApi({...toRaw(queryParams)}).then((res:any) => {
+    if (res.code === 200) {
+      CompilationList.value = res.data.list
+      total.value = res.data.total
+    }
+  }).catch((err:any) => {
+    console.log('err', err)
+  })
+}
 
 </script>
 
@@ -105,11 +183,15 @@ let showAddCompilation = ref(false)
       .inner{
         width: 1232px;
         margin: 24px auto 0;
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
+        display: grid;
+        // grid-auto-flow: row;
+        grid-template-columns: repeat(3, 1fr);
         .inner-item{
           margin-bottom: 23px;
+          margin-right: 23px;
+        }
+        .inner-item:nth-child(3n){
+          margin-right: 0;
         }
         .add-item {
           width: 400px;
@@ -128,6 +210,13 @@ let showAddCompilation = ref(false)
           }
         }
       }
+    }
+    .footer{
+      width: 100%;
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 }
 </style>

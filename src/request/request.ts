@@ -2,7 +2,7 @@ import axios from 'axios'
 import { ElMessage } from 'element-plus'
 
 const request = axios.create({
-  baseURL: 'http://localhost:3000',
+  baseURL: 'http://localhost:80',
   timeout: 5000,
 })
 
@@ -23,3 +23,5 @@ request.interceptors.response.use(
     return Promise.reject(error)
   }
 )
+
+export default request
