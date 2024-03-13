@@ -45,7 +45,8 @@
 
 <script setup lang='ts'>
 import { ref, onMounted, reactive, toRaw } from 'vue'
-import { ElMessageBox } from 'element-plus'
+import {useRouter} from 'vue-router'
+import { ElMessageBox, ElMessage } from 'element-plus'
 import type { Action } from 'element-plus'
 import HeaderTop from './components/HeaderTop.vue'
 import Compilation from '@/components/Compilation.vue'
@@ -59,6 +60,7 @@ type CompilationItem = {
   sort: number
 }
 
+const router = useRouter()
 let showAddCompilation = ref(false)
 let CompilationList = ref<CompilationItem[]>([])
 let total = ref(0)
@@ -105,7 +107,7 @@ const currentChange = (value: number) => {
 }
 
 const editCompilation = (id:number) => {
-
+  router.push({name: 'compilationDetail', query: {id}})
 }
 
 const getCompilation = () => {

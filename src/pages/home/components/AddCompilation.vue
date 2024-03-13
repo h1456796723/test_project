@@ -53,6 +53,7 @@ import {reactive, ref, toRaw} from 'vue'
 import { genFileId, ElMessage } from 'element-plus'
 import type { UploadInstance, UploadRawFile, FormRules, FormInstance } from 'element-plus'
 import {addCompilationApi} from '@/request/index'
+import {getBase64} from '@/utils/common'
 const props = defineProps({
   show: {
     type: Boolean,
@@ -102,23 +103,6 @@ const handleExceed = (files:any) => {
   const file = files[0] as UploadRawFile
   file.uid = genFileId()
   uploadRef.value!.handleStart(file)
-}
-
-const getBase64 = (file: any) => {
-  return new Promise(function(resolve, reject) {
-    let reader = new FileReader();
-    let imgResult = ""
-    reader.readAsDataURL(file);
-    reader.onload = function() {
-      imgResult = reader.result as string
-    };
-    reader.onerror = function(error) {
-      reject(error);
-    };
-    reader.onloadend = function() {
-      resolve(imgResult);
-    };
-  });
 }
 
 const onClose = () => {
