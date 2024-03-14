@@ -54,7 +54,7 @@ const compilationDetail = reactive({
 })
 const imageList = ref<any[]>([])
 const queryParams = reactive({
-  pageSize: 9999,
+  pageSize: 999,
   currentPage: 1,
   keywords: ''
 })
@@ -129,16 +129,19 @@ const onSubmit = async () => {
 const getImageList = () => {
   getImageListApi({compilationId: route.query.id, ...toRaw(queryParams)}).then((res:any) => {
     if (res.code === 200) {
-      console.log('res', res)
       compilationDetail.total = res.data.total
       if (queryParams.currentPage === 1) {
-        imageList.value = res.data.list.map((item:any) => {
-          return {
-            src: item.image,
-            ...item,
-            title: item.name
-          }
-        })
+        if (res.data.list.length > 0) {
+          imageList.value = res.data.list.map((item:any) => {
+            return {
+              src: item.image,
+              ...item,
+              title: item.name
+            }
+          })
+        } else {
+          imageList.value = []
+        }
       } else {
         const lastList = res.data.list.map((item:any) => {
           return {

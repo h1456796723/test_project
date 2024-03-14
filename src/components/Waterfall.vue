@@ -11,10 +11,10 @@
       v-for="(property, index) in imagesProperty" :key="property.id">
       <div class="u-image-container">
         <span class="delete" @click="handleDelete(property.id)"><el-icon color="#fff"><CircleClose /></el-icon></span>
-        <el-image
+        <el-image lazy
         class="u-image"
-        :src="images[index].src"
-        :alt="images[index].title"
+        :src="property.src"
+        :alt="property.title"
         :zoom-rate="1.2"
         :max-scale="7"
         :min-scale="0.2"
@@ -47,6 +47,15 @@ interface Props {
   borderRadius?: number // 瀑布流区域和图片圆角，单位px
   backgroundColor?: string // 瀑布流区域背景填充色
 }
+type TmagesProperty = {
+  src: string
+  title?: string
+  width: number|string
+  height: number|string
+  id: number|string
+  top: number|string
+  left: number|string
+}
 const props = withDefaults(defineProps<Props>(), {
   images: () => [],
   columnCount: 3,
@@ -56,7 +65,7 @@ const props = withDefaults(defineProps<Props>(), {
   backgroundColor: '#F2F4F8'
 })
 const emit = defineEmits(['onDelete','scrollEvent'])
-const imagesProperty = ref<any[]>([])
+const imagesProperty = ref<TmagesProperty[]>([])
 const preColumnHeight = ref<number[]>(Array(props.columnCount).fill(0)) // 每列的高度
 const waterfall = ref() 
 const imageWidth = ref()
@@ -90,20 +99,11 @@ watch(
 watchEffect(() => {
   if (props.images.length) {
     onPreload()
+  } else {
+    imagesProperty.value = []
   }
 })
-
-// const scrollEventFn = (e:any) => {
-//   if (e.srcElement.scrollTop + e.srcElement.clientHeight > e.srcElement.scrollHeight - 20) {
-//     // console.log('滚动到底部')
-//     emit('scrollEvent')
-//   }  @scroll="scrollEventFn" 
-// }
-const scrollEventFn = () => {
-  console.log('滚动到底部')
-  emit('scrollEvent')
-}
-const handleDelete = (id: string) => {
+const handleDelete = (id: string|number) => {
   emit('onDelete', id)
 }
 async function onPreload () { // 计算图片宽高和位置（top，left）
@@ -111,10 +111,10 @@ async function onPreload () { // 计算图片宽高和位置（top，left）
   imageWidth.value = (waterfall.value.offsetWidth - (props.columnCount + 1) * props.columnGap) / props.columnCount
   imagesProperty.value = []
   for (let i = 0; i < props.images.length; i++) {
-    await loadImage(props.images[i].src, i, props.images[i].id)
+    await loadImage(props.images[i].src, i, props.images[i])
   }
 }
-function loadImage (url: string, n: number, id: string|number) {
+function loadImage (url: string, n: number, imageItem: Image) {
   return new Promise((resolve) => {
     const image = new Image()
     image.src = url
@@ -126,7 +126,9 @@ function loadImage (url: string, n: number, id: string|number) {
       imagesProperty.value[n] = { // 存储图片宽高和位置信息
         width: imageWidth.value,
         height: height,
-        id,
+        id: imageItem.id,
+        title: imageItem.title,
+        src: imageItem.src,
         ...getPosition(n, height)
       }
       resolve('load')
