@@ -3,8 +3,10 @@
   <el-dialog
     v-model="props.show"
     title="添加图片"
-    width="500"
+    :width="dialogWidth"
     :before-close="() => emits('close')"
+    :append-to-body="true"
+    center
   >
     <el-form ref="formRef" :model="formData" :rules="formRules" label-width="100px">
       <el-form-item label="图片描述：" prop="name">
@@ -49,7 +51,7 @@
 </template>
 
 <script setup lang='ts'>
-import {reactive, ref, toRaw} from 'vue'
+import {reactive, ref, toRaw, onMounted} from 'vue'
 import {useRoute} from 'vue-router'
 import {genFileId,ElMessage} from 'element-plus'
 import type { UploadInstance, UploadRawFile, FormRules, FormInstance } from 'element-plus'
@@ -75,6 +77,13 @@ const formRef = ref<FormInstance>()
 const formRules = reactive<FormRules>({
   name: [{ required: true, message: '请输入图片描述', trigger: 'blur' }],
   image: [{ required: true, message: '请上传图片', trigger: 'blur' }],
+})
+let dialogWidth = ref(500)
+
+onMounted(() => {
+  if (window.screen.width < 560) {
+    dialogWidth.value = 350
+  }
 })
 
 const handleSubmit = () => {

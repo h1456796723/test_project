@@ -22,7 +22,7 @@
       <div class="main-content" >
         <Waterfall
           :images="imageList"
-          :column-count="4" 
+          :column-count="collumnCount" 
           :column-gap="10" 
           :border-radius="6"
           background-color="#fff"
@@ -60,11 +60,19 @@ const queryParams = reactive({
 })
 let canGetList = ref(true)
 
+// 每行列数
+let collumnCount = ref(4)
+
 const addImageBtn = () => {
   showAddImage.value = true
 }
 
 onMounted(() => {
+  if (window.innerWidth < 560) {
+    collumnCount.value = 1
+  } else if (window.innerWidth < 1044) {
+    collumnCount.value = 2
+  }
   getCompilationDetail()
   getImageList()
 })
@@ -159,94 +167,201 @@ const getCompilationDetail = () => {
 </script>
 
 <style scoped lang="scss">
-.container{
-  width: 100vw;
-  height: 100vh;
-  .header{
-    width: 100%;
-    height: 72px;
-    box-sizing: border-box;
-    padding: 0 32px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    left: 0;
-    .logo{
-      width: 67px;
-      height: 24px;
-      cursor: pointer;
-    }
-    .search-container{
-      width: 470px;
-      height: 40px;
-      position: relative;
-      .search{
-        width: 470px;
-        height: 40px;
-        outline: none;
-        box-sizing: border-box;
-        padding: 0 84px 0 16px;
-        border-radius: 999px;
-        border: none;
-        background-color: rgba(0,0,0,0.03);
-        caret-color: #333;
-        color: #333;
-        font-size: 16px;
-      }
-      .search-icon{
-        width: 20px;
-        height: 20px;
-        display: inline-block;
-        position: absolute;
-        top: 13px;
-        right: 10px;
-        cursor: pointer;
-      }
-    }
-    .add-btn{
-      width: 234px;
-      height: 48px;
-      border-radius: 999px;
-      font-size: 16px;
-    }
-  }
-  .main{
+@media screen and (max-width: 560px) {
+  .container{
     width: 100vw;
-    height: calc(100vh - 72px);
-    display: flex;
-    .aside{
-      width: 220px;
-      height: 100%;
+    height: 100vh;
+    .header{
+      width: 100%;
+      height: 110px;
       box-sizing: border-box;
-      padding: 10px 20px;
+      background-color: #fff;
+      padding: 0 32px;
       display: flex;
-      .aside-image{
-        width: 80px;
-        height: 80px;
-        border-radius: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      left: 0;
+      z-index: 99;
+      .logo{
+        width: 67px;
+        height: 24px;
+        cursor: pointer;
+        // order: 1;
       }
-      .detail{
-        height: 80px;
-        margin-left: 5px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        .title{
+      .search-container{
+        width: 270px;
+        height: 40px;
+        position: relative;
+        order: 3;
+        background-color: #fff;
+        .search{
+          width: 270px;
+          height: 40px;
+          outline: none;
+          box-sizing: border-box;
+          padding: 0 84px 0 16px;
+          border-radius: 999px;
+          border: none;
+          background-color: rgba(0,0,0,0.03);
+          caret-color: #333;
+          color: #333;
           font-size: 16px;
         }
-        .total{
-          font-size: 14px;
-          color: #9195A3;
-          margin-top: 5px;
+        .search-icon{
+          width: 20px;
+          height: 20px;
+          display: inline-block;
+          position: absolute;
+          top: 13px;
+          right: 10px;
+          cursor: pointer;
         }
       }
+      .add-btn{
+        order: 2;
+        width: 90px;
+        height: 30px;
+        border-radius: 999px;
+        font-size: 14px;
+      }
     }
-    .main-content{
-      min-width: calc(100% - 235px);
-      height: 100%;
-      // overflow-y: scroll;
+    .main{
+      width: 100vw;
+      height: calc(100vh - 110px);
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
+      padding-bottom: 30px;
+      .aside{
+        width: 100%;
+        height: 120px;
+        box-sizing: border-box;
+        padding: 10px 20px;
+        display: flex;
+        .aside-image{
+          width: 80px;
+          height: 80px;
+          border-radius: 12px;
+        }
+        .detail{
+          height: 80px;
+          margin-left: 5px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          .title{
+            font-size: 16px;
+          }
+          .total{
+            font-size: 14px;
+            color: #9195A3;
+            margin-top: 5px;
+          }
+        }
+      }
+      .main-content{
+        min-width: calc(100% - 120px);
+        height: 100%;
+        // overflow-y: scroll;
+      }
+    }
+  }
+}
+@media screen and (min-width: 560px) {
+  .container{
+    width: 100vw;
+    height: 100vh;
+    .header{
+      width: 100%;
+      height: 72px;
+      box-sizing: border-box;
+      padding: 0 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      left: 0;
+      .logo{
+        width: 67px;
+        height: 24px;
+        cursor: pointer;
+      }
+      .search-container{
+        width: 470px;
+        height: 40px;
+        position: relative;
+        .search{
+          width: 470px;
+          height: 40px;
+          outline: none;
+          box-sizing: border-box;
+          padding: 0 84px 0 16px;
+          border-radius: 999px;
+          border: none;
+          background-color: rgba(0,0,0,0.03);
+          caret-color: #333;
+          color: #333;
+          font-size: 16px;
+        }
+        .search-icon{
+          width: 20px;
+          height: 20px;
+          display: inline-block;
+          position: absolute;
+          top: 13px;
+          right: 10px;
+          cursor: pointer;
+        }
+      }
+      .add-btn{
+        width: 234px;
+        height: 48px;
+        border-radius: 999px;
+        font-size: 16px;
+      }
+    }
+    .main{
+      width: 100vw;
+      height: calc(100vh - 72px);
+      display: flex;
+      .aside{
+        width: 220px;
+        height: 100%;
+        box-sizing: border-box;
+        padding: 10px 20px;
+        display: flex;
+        .aside-image{
+          width: 80px;
+          height: 80px;
+          border-radius: 12px;
+        }
+        .detail{
+          height: 80px;
+          margin-left: 5px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          .title{
+            font-size: 16px;
+          }
+          .total{
+            font-size: 14px;
+            color: #9195A3;
+            margin-top: 5px;
+          }
+        }
+      }
+      .main-content{
+        min-width: calc(100% - 235px);
+        height: 100%;
+        box-sizing: border-box;
+        padding-bottom: 20px;
+        // overflow-y: scroll;
+      }
     }
   }
 }

@@ -124,63 +124,245 @@ const getCompilation = () => {
 </script>
 
 <style scoped lang="scss">
+// @media screen and (max-width: 1440px) {
+  
+// }
+
 .container{
   width: 100%;
   height: 100vh;
-  .main{
-    width: 100%;
-    height: 620px;
-    background: url('https://img6.bdstatic.com/img/image/public/helian.jpg') no-repeat center top;
-    .logo-bg{
+  @media screen and (max-width: 560px) {
+    .main{
       width: 100%;
-      height: 266px;
-      margin-top: 80px;
-      .logo{
-        position: relative;
+      height: 320px;
+      background: url('https://img6.bdstatic.com/img/image/public/helian.jpg') no-repeat center top;
+      .logo-bg{
         width: 100%;
-        height: 180px;
-        img{
-          width: 244px;
-          height: 76px;
-          position: absolute;
-          bottom: 32px;
-          left: 50%;
-          transform: translateX(-50%);
+        height: 266px;
+        margin-top: 20px;
+        .logo{
+          position: relative;
+          width: 100%;
+          height: 180px;
+          img{
+            width: 244px;
+            height: 76px;
+            position: absolute;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%);
+          }
+        }
+        .search-container{
+          width: 100%;
+          .search{
+              width: 300px;
+              height: 34px;
+              margin: 0 auto;
+              display: flex;
+              border-radius: 10px;
+              overflow: hidden;
+              input{
+                outline: none;
+                width: 346px;
+                border: none;
+                font-size: 16px;
+                color: #222;
+                box-sizing: border-box;
+                padding: 0 14px;
+              }
+              .btn{
+                width: 88px;
+                background-color: #E4E4E5;
+                text-align: center;
+                line-height: 34px;
+                cursor: pointer;
+                user-select:none;
+                font-size: 12px;
+                color: #222;
+              }
+            }
         }
       }
-      .search-container{
-        width: 100%;
-        .search{
-          width: 654px;
-          height: 44px;
-          margin: 0 auto;
-          display: flex;
-          border-radius: 10px;
-          overflow: hidden;
-          input{
-            outline: none;
-            width: 546px;
-            border: none;
-            font-size: 16px;
-            color: #222;
-            box-sizing: border-box;
-            padding: 0 14px;
+    }
+    .search-result{
+          width: 100%;
+          margin: 12px auto 0;
+          .inner{
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            .inner-item{
+              margin-bottom: 10px;
+              // margin-right: 23px;
+            }
+            .add-item {
+              width: 300px;
+              height: 200px;
+              border-radius: 12px;
+              background: url('https://emoji.cdn.bcebos.com/yunque/shouyebeijingtu.png') no-repeat;
+              cursor: pointer;
+              color: #fff;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-size: 14px;
+              user-select:none;
+              &>div:nth-child(1) {
+                margin-right: 2px;
+              }
+            }
           }
-          .btn{
-            width: 108px;
-            background-color: #E4E4E5;
-            text-align: center;
-            line-height: 44px;
-            cursor: pointer;
-            user-select:none;
-            font-size: 17px;
-            color: #222;
+        }
+  }
+  @media screen and (min-width: 560px) and (max-width: 1044px) {
+    .main{
+      width: 100%;
+      height: 620px;
+      background: url('https://img6.bdstatic.com/img/image/public/helian.jpg') no-repeat center top;
+      .logo-bg{
+        width: 100%;
+        height: 266px;
+        margin-top: 80px;
+        .logo{
+          position: relative;
+          width: 100%;
+          height: 180px;
+          img{
+            width: 244px;
+            height: 76px;
+            position: absolute;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%);
+          }
+        }
+        .search-container{
+          width: 100%;
+          .search{
+              width: 654px;
+              height: 44px;
+              margin: 0 auto;
+              display: flex;
+              border-radius: 10px;
+              overflow: hidden;
+              input{
+                outline: none;
+                width: 546px;
+                border: none;
+                font-size: 16px;
+                color: #222;
+                box-sizing: border-box;
+                padding: 0 14px;
+              }
+              .btn{
+                width: 108px;
+                background-color: #E4E4E5;
+                text-align: center;
+                line-height: 44px;
+                cursor: pointer;
+                user-select:none;
+                font-size: 17px;
+                color: #222;
+              }
+            }
+        }
+      }
+    }
+    .search-result{
+      width: 100%;
+      .inner{
+        width: 100%;
+        margin: 24px auto 0;
+        // display: grid;
+        // grid-auto-flow: row;
+        // grid-template-columns: repeat(2, 1fr);
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        .inner-item{
+          margin-bottom: 23px;
+          margin-right: 23px;
+        }
+        .inner-item:nth-child(2n){
+          margin-right: 0;
+        }
+        .add-item {
+          width: 380px;
+          height: 250px;
+          border-radius: 12px;
+          background: url('https://emoji.cdn.bcebos.com/yunque/shouyebeijingtu.png') no-repeat;
+          cursor: pointer;
+          color: #fff;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 14px;
+          user-select:none;
+          &>div:nth-child(1) {
+            margin-right: 2px;
           }
         }
       }
     }
   }
-  .search-result{
+  @media screen and (min-width: 1044px) {
+    .main{
+      width: 100%;
+      height: 620px;
+      background: url('https://img6.bdstatic.com/img/image/public/helian.jpg') no-repeat center top;
+      .logo-bg{
+        width: 100%;
+        height: 266px;
+        margin-top: 80px;
+        .logo{
+          position: relative;
+          width: 100%;
+          height: 180px;
+          img{
+            width: 244px;
+            height: 76px;
+            position: absolute;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%);
+          }
+        }
+        .search-container{
+          width: 100%;
+          .search{
+              width: 654px;
+              height: 44px;
+              margin: 0 auto;
+              display: flex;
+              border-radius: 10px;
+              overflow: hidden;
+              input{
+                outline: none;
+                width: 546px;
+                border: none;
+                font-size: 16px;
+                color: #222;
+                box-sizing: border-box;
+                padding: 0 14px;
+              }
+              .btn{
+                width: 108px;
+                background-color: #E4E4E5;
+                text-align: center;
+                line-height: 44px;
+                cursor: pointer;
+                user-select:none;
+                font-size: 17px;
+                color: #222;
+              }
+            }
+        }
+      }
+    }
+    .search-result{
       width: 100%;
       .inner{
         width: 1232px;
@@ -213,6 +395,7 @@ const getCompilation = () => {
         }
       }
     }
+  }
     .footer{
       width: 100%;
       height: 100px;

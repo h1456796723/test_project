@@ -1,8 +1,9 @@
 <template>
 
-  <el-dialog v-model="props.show" title="添加专辑" width="600" center>
+  <el-dialog :before-close="() => emits('onClose')" :width="dialogWidth"
+   v-model="props.show" title="添加专辑" class="dialog-sty" center>
     <el-form ref="formRef" :model="formData"
-      label-width="110" :rules="rules">
+      :label-width="labelWidth" :rules="rules">
       <el-form-item prop="name" label="合辑名称：">
         <el-input v-model="formData.name" aria-placeholder="请输入合辑名称" />
       </el-form-item>
@@ -49,7 +50,7 @@
 </template>
 
 <script setup lang='ts'>
-import {reactive, ref, toRaw} from 'vue'
+import {reactive, ref, toRaw, onMounted} from 'vue'
 import { genFileId, ElMessage } from 'element-plus'
 import type { UploadInstance, UploadRawFile, FormRules, FormInstance } from 'element-plus'
 import {addCompilationApi} from '@/request/index'
@@ -74,6 +75,8 @@ const formData = reactive({
 })
 
 let disabled = ref(false)
+let dialogWidth = ref(600)
+let labelWidth = ref(110)
 const rules = reactive<FormRules>({
   name: [
     { required: true, message: '请输入合辑名称', trigger: 'blur'}
@@ -84,6 +87,13 @@ const rules = reactive<FormRules>({
   image: [
     { required: true, message: '请上传封面', trigger: 'blur'}
   ]
+})
+
+onMounted(() => {
+  if (window.screen.width < 560) {
+    dialogWidth.value = 350
+    labelWidth.value = 100
+  }
 })
 
 const handleRemove = () => {
@@ -171,5 +181,9 @@ const beforeAvatarUpload = (rawFile: any) => {
   width: 178px;
   height: 178px;
   text-align: center;
+}
+
+.dialog-sty{
+  width: 600px;
 }
 </style>
