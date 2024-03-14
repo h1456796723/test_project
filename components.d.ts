@@ -22,5 +22,9 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     Spin: typeof import('./src/components/Spin.vue')['default']
     Waterfall: typeof import('./src/components/Waterfall.vue')['default']
+    Waterfall2: typeof import('./src/components/Waterfall2.vue')['default']
+  }
+  export interface ComponentCustomProperties {
+    vInfiniteScroll: typeof import('element-plus/es')['ElInfiniteScroll']
   }
 }

@@ -1,6 +1,7 @@
 import { createApp } from 'vue'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import router from '@/router/index.ts'
+import 'wc-waterfall'
 import 'reset.css'
 import './style.css'
 import 'element-plus/dist/index.css'

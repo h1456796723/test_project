@@ -4,8 +4,8 @@
     <header class="header">
       <img class="logo" src="https://img1.bdstatic.com/static/common/img/baidu_image_logo_2dd9a28.png" />
       <div class="search-container">
-        <input class="search" type="text" placeholder="请输入想要搜索的内容" />
-        <span class="search-icon">
+        <input class="search" type="text" placeholder="请输入想要搜索的内容" v-model="queryParams.keywords" />
+        <span class="search-icon" @click="searchImage">
           <el-icon><Search /></el-icon>
         </span>
       </div>
@@ -19,14 +19,15 @@
           <div class="total">共{{ compilationDetail.total }}张图片</div>
         </div>
       </div>
-      <div class="main-content" @scroll="scrollEventFn">
-        <Waterfall 
+      <div class="main-content" >
+        <Waterfall
           :images="imageList"
           :column-count="4" 
           :column-gap="10" 
           :border-radius="6"
           background-color="#fff"
           @onDelete="handleDelete"
+          @scrollEvent="scrollEventFn"
         ></Waterfall>
       </div>
     </main>
@@ -43,7 +44,6 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import type { Action } from 'element-plus'
 import AddImage from './components/AddImage.vue'
 import {getCompilationDetailApi,getImageListApi,deleteImageApi} from '@/request/index'
-import Waterfall from '@/components/Waterfall.vue'
 
 const route = useRoute()
 let showAddImage = ref(false)
@@ -52,11 +52,13 @@ const compilationDetail = reactive({
   image: '',
   total: 0
 })
-const imageList = ref([])
+const imageList = ref<any[]>([])
 const queryParams = reactive({
-  pageSize: 14,
-  currentPage: 1
+  pageSize: 9999,
+  currentPage: 1,
+  keywords: ''
 })
+let canGetList = ref(true)
 
 const addImageBtn = () => {
   showAddImage.value = true
@@ -66,6 +68,11 @@ onMounted(() => {
   getCompilationDetail()
   getImageList()
 })
+
+const searchImage = () => {
+  queryParams.currentPage = 1
+  getImageList()
+}
 
 const handleDelete = (id: string) => {
   ElMessageBox.alert('确定删除该图片吗？', '提示', {
@@ -89,10 +96,20 @@ const handleDelete = (id: string) => {
   })
 }
 
-const scrollEventFn = (e: any) => {
-  if (e.srcElement.scrollTop + e.srcElement.clientHeight > e.srcElement.scrollHeight - 20) {
-    console.log("触发了")
-  }
+const scrollEventFn = async () => {
+    if (canGetList.value === false) return
+    console.log("触发了", imageList.value.length, compilationDetail.total)
+    canGetList.value = false
+    if (imageList.value.length < compilationDetail.total) {
+      queryParams.currentPage += 1
+      await getImageList()
+      canGetList.value = true
+    } else {
+      ElMessage.warning('没有更多了')
+      setTimeout(() => {
+        canGetList.value = true
+      }, 100)
+    }
 }
 
 const onSubmit = async () => {
@@ -104,13 +121,26 @@ const onSubmit = async () => {
 const getImageList = () => {
   getImageListApi({compilationId: route.query.id, ...toRaw(queryParams)}).then((res:any) => {
     if (res.code === 200) {
-      imageList.value = res.data.list.map((item:any) => {
-        return {
-          src: item.image,
-          ...item,
-          title: item.name
-        }
-      })
+      console.log('res', res)
+      compilationDetail.total = res.data.total
+      if (queryParams.currentPage === 1) {
+        imageList.value = res.data.list.map((item:any) => {
+          return {
+            src: item.image,
+            ...item,
+            title: item.name
+          }
+        })
+      } else {
+        const lastList = res.data.list.map((item:any) => {
+          return {
+            src: item.image,
+            ...item,
+            title: item.name
+          }
+        })
+        imageList.value = [...imageList.value, ...lastList]
+      }
     }
   }).catch(err => {})
 }
@@ -216,7 +246,7 @@ const getCompilationDetail = () => {
     .main-content{
       min-width: calc(100% - 235px);
       height: 100%;
-      overflow-y: scroll;
+      // overflow-y: scroll;
     }
   }
 }

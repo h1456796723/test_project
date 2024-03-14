@@ -1,5 +1,6 @@
 <template>
-  <div class="m-waterfall" ref="waterfall" :style="`--borderRadius: ${borderRadius}px; background-color: ${backgroundColor}; width: ${totalWidth}; height: ${height}px;`">
+  <div class="m-waterfall" ref="waterfall" 
+  :style="`--borderRadius: ${borderRadius}px; background-color: ${backgroundColor}; width: ${totalWidth};height:100%;`">
     <Spin
       v-show="loaded[index]!==undefined"
       class="m-image"
@@ -7,10 +8,10 @@
       :spinning="!loaded[index]"
       size="small"
       indicator="dynamic-circle"
-      v-for="(property, index) in imagesProperty" :key="index">
+      v-for="(property, index) in imagesProperty" :key="property.id">
       <div class="u-image-container">
         <span class="delete" @click="handleDelete(property.id)"><el-icon color="#fff"><CircleClose /></el-icon></span>
-        <el-image lazy
+        <el-image
         class="u-image"
         :src="images[index].src"
         :alt="images[index].title"
@@ -27,7 +28,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, shallowRef, computed, watch, watchPostEffect } from 'vue'
+import { ref, computed, watch, watchEffect } from 'vue'
 import Spin from './Spin.vue'
 /*
   宽度固定，图片等比例缩放；使用JS获取每张图片宽度和高度，结合 `relative` 和 `absolute` 定位
@@ -36,6 +37,7 @@ import Spin from './Spin.vue'
 interface Image {
   src: string // 图片地址
   title?: string // 图片名称
+  id: number | string // 图片唯一标识
 }
 interface Props {
   images: Image[] // 图片数组
@@ -53,10 +55,10 @@ const props = withDefaults(defineProps<Props>(), {
   borderRadius: 8,
   backgroundColor: '#F2F4F8'
 })
-const emit = defineEmits(['onDelete'])
+const emit = defineEmits(['onDelete','scrollEvent'])
 const imagesProperty = ref<any[]>([])
 const preColumnHeight = ref<number[]>(Array(props.columnCount).fill(0)) // 每列的高度
-const waterfall = shallowRef() 
+const waterfall = ref() 
 const imageWidth = ref()
 const totalWidth = computed(() => {
   if (typeof props.width === 'number') {
@@ -85,23 +87,34 @@ watch(
     flush: 'post' // 在侦听器回调中访问被 Vue 更新之后的 DOM
   }
 )
-watchPostEffect(() => {
+watchEffect(() => {
   if (props.images.length) {
     onPreload()
   }
 })
+
+// const scrollEventFn = (e:any) => {
+//   if (e.srcElement.scrollTop + e.srcElement.clientHeight > e.srcElement.scrollHeight - 20) {
+//     // console.log('滚动到底部')
+//     emit('scrollEvent')
+//   }  @scroll="scrollEventFn" 
+// }
+const scrollEventFn = () => {
+  console.log('滚动到底部')
+  emit('scrollEvent')
+}
 const handleDelete = (id: string) => {
   emit('onDelete', id)
 }
 async function onPreload () { // 计算图片宽高和位置（top，left）
   // 计算每列的图片宽度
   imageWidth.value = (waterfall.value.offsetWidth - (props.columnCount + 1) * props.columnGap) / props.columnCount
-  imagesProperty.value.splice(0)
-  for (let i = 0; i < len.value; i++) {
+  imagesProperty.value = []
+  for (let i = 0; i < props.images.length; i++) {
     await loadImage(props.images[i].src, i, props.images[i].id)
   }
 }
-function loadImage (url: string, n: number, id: string) {
+function loadImage (url: string, n: number, id: string|number) {
   return new Promise((resolve) => {
     const image = new Image()
     image.src = url
@@ -151,6 +164,8 @@ function onLoaded (index: number) {
 .m-waterfall {
   position: relative;
   border-radius: var(--borderRadius);
+  height: 100%;
+  overflow-y: scroll;
   .m-image {
     position: absolute;
     // z-index: 99;
